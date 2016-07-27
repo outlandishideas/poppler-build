@@ -1,0 +1,25 @@
+---
+- name: Poppler Utils build
+  hosts: lambda-build
+  gather_facts: yes
+  become_method: sudo
+  become_user: root
+  remote_user: ec2-user #intended for use on Amazon Linux x64 to be compatible with Lambda
+
+  vars_files:
+    - ./vars/private.yml
+    - ./vars/public.yml
+
+  roles:
+    - role: provision-server
+    - role: build-poppler
+
+  tasks:
+
+  - name: Zip project executables
+    command: "zip -r {{ poppler_zip }} . chdir={{ poppler_output }}"
+
+
+  - name: Copy zipped executables to S3
+    s3: "bucket={{ s3_output_bucket }} object=/poppler/compiled.zip src={{ poppler_zip }} mode=put"
+

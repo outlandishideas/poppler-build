@@ -1,0 +1,37 @@
+---
+  - name: remove old working directories
+    file: path={{ tmp }}  state=absent
+    become: true
+
+  - name: Ensure working directories
+    file: path={{ item }}  state=directory mode=0777
+    with_items:
+      - "{{ tmp }}"
+      - "{{ tmp_poppler_path }}"
+      - "{{ poppler_output }}"
+      - "{{ poppler_path }}"
+
+
+  - name: Download and unarchive poppler-utils src
+    unarchive: "src=https://poppler.freedesktop.org/{{ poppler_version }}.tar.xz dest={{ tmp_poppler_path }} copy=no"
+
+  - name: Checkout the poppler test data
+    git: repo=git://git.freedesktop.org/git/poppler/test dest={{ poppler_path }}/testfiles update=no
+
+  - name: Running ./configure for Poppler-utils
+    command: "./configure --prefix={{ poppler_output }}   chdir={{ poppler_path}} --with-testdatadir={{ poppler_path }}/testfiles --enable-xpdf-headers --disable-shared  --enable-xpdf-headers --sysconfdir=/etc  --enable-cmyk"
+
+  - name: Running "make" for Poppler-utils
+    command: "make  chdir={{ poppler_path }}"
+
+  - name: Running "make install" for Poppler-utils
+    command: "make install chdir={{ poppler_path }}"
+
+  - name: Make poppler executables executable
+    become: true
+    file:
+      path: "{{ poppler_output }}"
+      mode: u=rwX,g=rX,o=rX
+      recurse: yes
+
+

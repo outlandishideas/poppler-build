@@ -1,0 +1,2 @@
+---
+  - s3_output_bucket: "your-s3-bucket-here"

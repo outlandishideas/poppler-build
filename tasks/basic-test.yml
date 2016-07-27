@@ -1,0 +1,23 @@
+___#untested, ironically
+ tasks:
+
+  - name: Download sample PDF for testing
+    get_url: url=http://www.publishers.org.uk/_resources/assets/attachment/full/0/2091.pdf dest=~/test_file.pdf
+
+  - name: copy basic app to test
+    command: |
+      cat <<EOT >> ~/poppler-node/index.js
+      var pdfUtil = require('pdf-to-text');
+      var pdf_path = "home/ec2-user/test_file.pdf";
+
+      pdfUtil.info(pdf_path, function(err, info) {
+          if (err) throw(err);
+          console.log(info);
+      });
+      EOT
+
+
+
+
+
+node index.js

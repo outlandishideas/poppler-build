@@ -1,0 +1,46 @@
+---
+        - name: Ensure git
+          become: true
+          yum: name=git state=present
+
+        - name: Ensure build tools
+          become: true
+          yum: name={{item}} state=latest
+          with_items:
+             - gcc44
+             - gcc-c++
+             - libgcc44
+             - cmake
+
+      #  - name: Uninstall old nodejs # only needed if old version of node is already installed
+      #    become: true
+      #    yum: name=nodejs state=absent
+
+        - name: Download node setup files
+          get_url: url=https://rpm.nodesource.com/setup_4.x dest=/tmp/node_setup
+
+        - name: Run Node setup
+          become: true
+          command: "bash /tmp/node_setup"
+
+        - name: Ensure node and npm
+          become: true
+          yum: name=nodejs state=latest
+          with_items:
+             - nodejs
+
+        - name: Ensure poppler dependences
+          become: true
+          yum: name={{item}} state=latest
+          with_items:
+            - fontconfig
+            - fontconfig-devel
+            - cairo
+            - libpng
+
+        - name: install utils included in lambda
+          become: true
+          yum: name={{item}} state=latest
+          with_items:
+            - ImageMagick.x86_64
+            - ghostscript.x86_64

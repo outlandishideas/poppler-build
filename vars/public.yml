@@ -1,0 +1,7 @@
+---
+- poppler_version: poppler-0.45.0
+  tmp: /tmp/poppler
+  tmp_poppler_path: "{{ tmp }}/install"
+  poppler_path: "{{ tmp_poppler_path }}/{{ poppler_version }}"
+  poppler_output: "{{ tmp }}/executables/"
+  poppler_zip: "{{ tmp }}/poppler-utils.zip"
